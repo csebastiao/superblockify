@@ -4,4 +4,4 @@ from .bearing import BearingPartitioner
 from .betweenness import BetweennessPartitioner
 from .dummy import DummyPartitioner
 from .steiner_tree import MinimumPartitioner
-from .streettype import ResidentialPartitioner
+from .streettype import ResidentialPartitioner, StreetHierarchyPartitioner

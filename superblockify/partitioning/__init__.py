@@ -10,6 +10,7 @@ from .approaches import (
     DummyPartitioner,
     MinimumPartitioner,
     ResidentialPartitioner,
+    StreetHierarchyPartitioner
 )
 
 # Further utils.

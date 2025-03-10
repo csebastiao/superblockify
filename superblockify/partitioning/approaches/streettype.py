@@ -35,3 +35,49 @@ class ResidentialPartitioner(AttributePartitioner):
             source_attribute="highway",
             destination_attribute=self.attribute_label,
         )
+
+
+class StreetHierarchyPartitioner(AttributePartitioner):
+    """Partitioner that only uses street type to partition the graph.
+
+    This partitioner groups edges by their street type. All streets below a defined 
+    threshold in the hierarchy are put in subgraphs. The resulting subgraphs are 
+    then partitioned into components based on their size and length. 
+
+    Notes
+    -----
+    The effectiveness of this partitioner is highly dependent on the quality of the
+    OSM data. If the data is not complete, this partitioner will not be able to
+    partition the graph into meaningful subgraphs.
+    """
+
+    def write_attribute(self, level=3, **kwargs):
+        """Group by street type.
+
+        Write 1 to :attr:`attribute_label` if the edge is or contains a low enough
+        hierarchy, 0 otherwise.
+        """
+        self.attribute_label = "street_hierarchy"
+        self.attribute_dtype = int
+        logger.debug("Writing street hierarchy attribute to graph.")
+        tags = []
+        if level >= 1:
+            tags.append("motorway")
+            tags.append("motorway_link")
+            tags.append("trunk")
+            tags.append("trunk_link")
+        if level >= 2:
+            tags.append("primary")
+            tags.append("primary_link")
+        if level >= 3:
+            tags.append("secondary")
+            tags.append("secondary_link")
+        if level >= 4:
+            tags.append("tertiary")
+            tags.append("tertiary_link")
+        new_edge_attribute_by_function(
+            self.graph,
+            lambda h: 1 if h in tags else 0,
+            source_attribute="highway",
+            destination_attribute=self.attribute_label,
+        )
